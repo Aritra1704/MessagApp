@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Spinner
+        android:id="@+id/toolbar_spinner"
+        style="@style/Widget.MyApp.HeaderBar.Spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#f0888f" />
+
+    <EditText
+        android:id="@+id/edtBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dip"
+        android:hint="Please enter your message"
+        android:minLines="3"
+        android:textSize="13sp" />
+
+    <Button
+        android:id="@+id/btnSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dip"
+        android:padding="5dip"
+        android:text="Send" />
+</LinearLayout>

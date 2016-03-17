@@ -1,32 +1,33 @@
 package com.example.arpaul.messagapp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 
@@ -37,21 +38,34 @@ import java.util.ArrayList;
 /**
  * Created by ARPaul on 13-03-2016.
  */
-public class SendSMSActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
+public class SendSMSActivity extends BaseActivity implements LoaderManager.LoaderCallbacks {
 
     private ArrayList<String> arrContactNo;
     private Spinner toolbar_spinner;
     private EditText edtBody;
     private Button btnSend;
     private String phoneNumber = "";
-    private ProgressDialog ringProgressDialog;
     private ContactListAdapter adapter;
+    private LinearLayout llSendSMSActivity;
 
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        setContentView(R.layout.new_sms_screen);
+    public void initialize() {
+        llSendSMSActivity =	(LinearLayout)inflater.inflate(R.layout.new_sms_screen,null);
+        llBody.addView(llSendSMSActivity, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
         inititaliseControls();
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            int hasLocationPermission = checkSelfPermission( Manifest.permission.SEND_SMS );
+            int hasReadContactsPermission = checkSelfPermission( Manifest.permission.READ_CONTACTS );
+            if(hasLocationPermission != PackageManager.PERMISSION_GRANTED ||
+                    hasReadContactsPermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS,Manifest.permission.READ_CONTACTS},1);
+            }
+        } else {
+            getSupportLoaderManager().initLoader(1, null, SendSMSActivity.this);
+        }
 
         toolbar_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -78,19 +92,29 @@ public class SendSMSActivity extends AppCompatActivity implements LoaderManager.
                     PendingIntent sentPendingIntent = PendingIntent.getBroadcast(SendSMSActivity.this, 0, new Intent(SMS_SENT), 0);
                     PendingIntent deliveredPendingIntent = PendingIntent.getBroadcast(SendSMSActivity.this, 0, new Intent(SMS_DELIVERED), 0);
 
-// For when the SMS has been sent
+                    // For when the SMS has been sent
                     registerReceiver(smsSentReceiver, new IntentFilter(SMS_SENT));
 
-// For when the SMS has been delivered
+                    // For when the SMS has been delivered
                     registerReceiver(smsDeliveryReceiver, new IntentFilter(SMS_DELIVERED));
 
-// Get the default instance of SmsManager
+                    // Get the default instance of SmsManager
                     SmsManager smsManager = SmsManager.getDefault();
-// Send a text based SMS
+                    // Send a text based SMS
                     smsManager.sendTextMessage(phoneNumber, null, smsBody, sentPendingIntent, deliveredPendingIntent);
                 }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1)
+        {
+            getSupportLoaderManager().initLoader(1, null, SendSMSActivity.this);
+        }
     }
 
     BroadcastReceiver smsSentReceiver = new BroadcastReceiver() {
@@ -160,7 +184,7 @@ public class SendSMSActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-        showLoader();
+        showLoader("Please wait..");
         return new CursorLoader(this, ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
     }
 
@@ -200,23 +224,14 @@ public class SendSMSActivity extends AppCompatActivity implements LoaderManager.
 
     }
 
-    public void showLoader() {
-        ringProgressDialog = ProgressDialog.show(SendSMSActivity.this, "", "Please wait ...", true);
-        ringProgressDialog.setCancelable(false);
-    }
-    private void hideLoader(){
-        if(ringProgressDialog != null && ringProgressDialog.isShowing())
-            ringProgressDialog.dismiss();
-    }
-
     private void inititaliseControls(){
-        toolbar_spinner     = (Spinner) findViewById(R.id.toolbar_spinner);
-        edtBody             = (EditText) findViewById(R.id.edtBody);
-        btnSend             = (Button) findViewById(R.id.btnSend);
+        toolbar_spinner     = (Spinner) llSendSMSActivity.findViewById(R.id.toolbar_spinner);
+        edtBody             = (EditText) llSendSMSActivity.findViewById(R.id.edtBody);
+        btnSend             = (Button) llSendSMSActivity.findViewById(R.id.btnSend);
 
         adapter = new ContactListAdapter(SendSMSActivity.this, new ArrayList<String>());
 
-        toolbar_spinner = (Spinner) findViewById(R.id.toolbar_spinner);
+        toolbar_spinner = (Spinner) llSendSMSActivity.findViewById(R.id.toolbar_spinner);
         toolbar_spinner.setAdapter(adapter);
 
     }

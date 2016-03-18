@@ -36,7 +36,7 @@ public class SMSActivity extends BaseActivity implements LoaderManager.LoaderCal
 
     @Override
     public void initialize() {
-        llSMSActivity =	(LinearLayout)inflater.inflate(R.layout.activity_sms,null);
+        llSMSActivity =	(LinearLayout)inflater.inflate(R.layout.content_sms,null);
         llBody.addView(llSMSActivity, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -44,6 +44,8 @@ public class SMSActivity extends BaseActivity implements LoaderManager.LoaderCal
             int hasLocationPermission = checkSelfPermission( Manifest.permission.READ_SMS );
             if( hasLocationPermission != PackageManager.PERMISSION_GRANTED ) {
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_SMS},1);
+            } else {
+                getSupportLoaderManager().initLoader(1, null, SMSActivity.this);
             }
         } else {
             getSupportLoaderManager().initLoader(1, null, SMSActivity.this);

@@ -62,6 +62,8 @@ public class SendSMSActivity extends BaseActivity implements LoaderManager.Loade
             if(hasLocationPermission != PackageManager.PERMISSION_GRANTED ||
                     hasReadContactsPermission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS,Manifest.permission.READ_CONTACTS},1);
+            } else {
+                getSupportLoaderManager().initLoader(1, null, SendSMSActivity.this);
             }
         } else {
             getSupportLoaderManager().initLoader(1, null, SendSMSActivity.this);

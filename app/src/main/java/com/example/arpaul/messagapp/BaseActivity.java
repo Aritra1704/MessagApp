@@ -20,8 +20,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     private ProgressDialog ringProgressDialog;
 
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Thread.setDefaultUncaughtExceptionHandler(new UnCaughtException(BaseActivity.this));
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -29,6 +29,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         inflater 				= 		this.getLayoutInflater();
         llBody                  =       (LinearLayout) findViewById(R.id.llBody);
+
+        initialize();
     }
 
     public abstract void initialize();

@@ -47,6 +47,7 @@ public class SendSMSActivity extends BaseActivity implements LoaderManager.Loade
     private String phoneNumber = "";
     private ContactListAdapter adapter;
     private LinearLayout llSendSMSActivity;
+    private int spinnerPosition = 0;
 
     @Override
     public void initialize() {
@@ -59,9 +60,13 @@ public class SendSMSActivity extends BaseActivity implements LoaderManager.Loade
         {
             int hasLocationPermission = checkSelfPermission( Manifest.permission.SEND_SMS );
             int hasReadContactsPermission = checkSelfPermission( Manifest.permission.READ_CONTACTS );
-            if(hasLocationPermission != PackageManager.PERMISSION_GRANTED ||
+            if(hasLocationPermission != PackageManager.PERMISSION_GRANTED &&
                     hasReadContactsPermission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS,Manifest.permission.READ_CONTACTS},1);
+            } else if(hasLocationPermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
+            } else if(hasReadContactsPermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CONTACTS},1);
             } else {
                 getSupportLoaderManager().initLoader(1, null, SendSMSActivity.this);
             }
@@ -216,6 +221,8 @@ public class SendSMSActivity extends BaseActivity implements LoaderManager.Loade
                     }
                 } while (cursor.moveToNext());
                 adapter.refresh(arrContactNo);
+                if(spinnerPosition > 0)
+                    toolbar_spinner.setSelection(spinnerPosition);
             }
         }
         hideLoader();

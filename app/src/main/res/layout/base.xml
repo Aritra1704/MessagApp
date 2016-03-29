@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.arpaul.messagapp.SMSActivity">
+    tools:context="com.example.arpaul.messagapp.BaseActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -21,11 +21,15 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        android:id="@+id/llBody"
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"></LinearLayout>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <include layout="@layout/base_middle" />
+    </FrameLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.example.arpaul.messagapp.DataObject.SMSDO;
 import com.example.arpaul.messagapp.R;
 import com.example.arpaul.messagapp.SMSDetailActivity;
+import com.example.arpaul.messagapp.Utilities.CalendarUtils;
+import com.example.arpaul.messagapp.Utilities.StringUtils;
 
 import java.util.ArrayList;
 
@@ -41,9 +43,16 @@ public class SMSListAdapter extends RecyclerView.Adapter<SMSListAdapter.ViewHold
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final SMSDO objSMSDO = arrCallDetails.get(position);
-        holder.tvContactNo.setText(objSMSDO.getsenderId());
-        holder.tvCallTime.setText(objSMSDO.getTime());
+        //holder.tvContactNo.setText(objSMSDO.getAddress());//objSMSDO.getsenderId()
+        holder.tvCallTime.setText(objSMSDO.getAddress());
         holder.tvSMSBody.setText(objSMSDO.getMsg());
+        holder.tvSMSAddress.setText(CalendarUtils.getCommaFormattedDateTime(CalendarUtils.getDateTime(objSMSDO.getTime())));
+
+        if(StringUtils.getInt(objSMSDO.getReadState()) == 0){
+            holder.mView.setBackgroundColor(context.getResources().getColor(R.color.colorPink));
+        } else {
+            holder.mView.setBackgroundColor(context.getResources().getColor(R.color.colorGreen));
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +77,7 @@ public class SMSListAdapter extends RecyclerView.Adapter<SMSListAdapter.ViewHold
         public final TextView tvContactNo;
         public final TextView tvCallTime;
         public final TextView tvSMSBody;
+        public final TextView tvSMSAddress;
 
         public ViewHolder(View view) {
             super(view);
@@ -75,6 +85,7 @@ public class SMSListAdapter extends RecyclerView.Adapter<SMSListAdapter.ViewHold
             tvContactNo = (TextView) view.findViewById(R.id.tvContactNo);
             tvCallTime = (TextView) view.findViewById(R.id.tvSMSTime);
             tvSMSBody = (TextView) view.findViewById(R.id.tvSMSBody);
+            tvSMSAddress = (TextView) view.findViewById(R.id.tvSMSAddress);
         }
 
         @Override

@@ -41,9 +41,28 @@ public class SMSActivity extends BaseActivity implements LoaderManager.LoaderCal
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
-            int hasLocationPermission = checkSelfPermission( Manifest.permission.READ_SMS );
-            if( hasLocationPermission != PackageManager.PERMISSION_GRANTED ) {
+            int hasREAD_SMSPermission = checkSelfPermission( Manifest.permission.READ_SMS );
+            int hasSEND_SMSPermission = checkSelfPermission( Manifest.permission.SEND_SMS );
+            int hasReadContactsPermission = checkSelfPermission( Manifest.permission.READ_CONTACTS );
+            if( hasREAD_SMSPermission != PackageManager.PERMISSION_GRANTED  &&
+                    hasSEND_SMSPermission != PackageManager.PERMISSION_GRANTED &&
+                    hasReadContactsPermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_SMS, Manifest.permission.SEND_SMS,Manifest.permission.READ_CONTACTS},1);
+            } else if( hasREAD_SMSPermission != PackageManager.PERMISSION_GRANTED  &&
+                    hasSEND_SMSPermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_SMS, Manifest.permission.SEND_SMS},1);
+            } else if( hasREAD_SMSPermission != PackageManager.PERMISSION_GRANTED  &&
+                    hasReadContactsPermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_SMS,Manifest.permission.READ_CONTACTS},1);
+            } else if(hasSEND_SMSPermission != PackageManager.PERMISSION_GRANTED &&
+                    hasReadContactsPermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS,Manifest.permission.READ_CONTACTS},1);
+            } else if(hasREAD_SMSPermission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_SMS},1);
+            } else if(hasSEND_SMSPermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
+            } else if(hasReadContactsPermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_CONTACTS},1);
             } else {
                 getSupportLoaderManager().initLoader(1, null, SMSActivity.this);
             }
